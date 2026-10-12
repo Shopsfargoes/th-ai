@@ -1,0 +1,22 @@
+:root {
+  --purple: #9b51e0;
+  --purple-dark: #7a35bd;
+  --bg: #ffffff;
+  --text: #1c1c28;
+  --muted: #6b6b80;
+  --card: #f1f3f9;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Roboto, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+.logo {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: 700;
+  color: var(--purple);
+  font-size: 2rem;
+}
