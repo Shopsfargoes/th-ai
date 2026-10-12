@@ -53,7 +53,7 @@
           close(); html += '<hr>';
               } else if (/^\s*-{3,}\s*$/.test(line)) {
         close(); html += '<hr>';
-    } else if (/^\s*-{3,}\s*$/.test(line)) {
+            } else if (/^\s*-{3,}\s*$/.test(line)) {
         close(); html += '<hr>';
       } else if (!line.trim()) {
         close();
