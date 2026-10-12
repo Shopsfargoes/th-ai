@@ -35,15 +35,25 @@
         <button class="icon-btn" id="burger" aria-label="Open menu">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
         </button>
+        <button class="agent-btn" id="agentBtn" aria-haspopup="dialog">
+          <span id="agentName">TH_AI</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
       </div>
 
       <div class="messages" id="messages">
-        <div class="hero" id="hero"><h2 id="greeting">How can I help you today?</h2></div>
+        <div class="hero" id="hero"><h2 id="greeting">How can I help you today?</h2><p id="heroSub"></p></div>
         <div class="thread" id="thread" hidden></div>
       </div>
 
       <div class="composer-wrap dock">
+        <div class="notice" id="notice" hidden></div>
+        <div class="attach-chip" id="chip" hidden><span id="chipName"></span><button id="chipX" aria-label="Remove file">×</button></div>
         <div class="composer">
+          <button class="clip" id="clip" hidden aria-label="Attach a file">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 11-9.2 9.2a5.5 5.5 0 0 1-7.8-7.8l9.2-9.2a3.7 3.7 0 0 1 5.2 5.2l-9.2 9.2a1.8 1.8 0 0 1-2.6-2.6L15.6 6"/></svg>
+          </button>
+          <input type="file" id="file" accept=".txt,.md,.csv,.json,text/plain" hidden>
           <textarea id="prompt" rows="1" placeholder="Ask anything"></textarea>
           <button class="send" id="send" disabled aria-label="Send">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
@@ -52,6 +62,38 @@
         <div class="footnote">TH_AI can make mistakes. Check important information.</div>
       </div>
     </section>
+  </div>
+
+  <!-- Select the chat model -->
+  <div class="modal-backdrop" id="modal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <h3 id="modalTitle">Select the chat model</h3>
+        <button class="icon-x" id="closeModal" aria-label="Close">×</button>
+      </div>
+      <p class="modal-sub">Pick the one that fits what you want to do. Choosing a new one starts a new chat.</p>
+      <div class="modal-body">
+        <div class="agent-grid" id="builtin"></div>
+
+        <h4>Your agents</h4>
+        <div class="agent-grid" id="custom"></div>
+
+        <div id="createBox">
+          <button class="btn btn-outline small" id="showCreate" type="button">+ Create your own agent</button>
+          <form id="createForm" class="stack cform" hidden novalidate>
+            <div class="chips" id="presets"></div>
+            <div id="cErr" class="alert" hidden role="alert"></div>
+            <div class="field"><input id="cName" maxlength="60" placeholder="Agent name (e.g. Legal Advisor)"></div>
+            <div class="field"><input id="cDesc" maxlength="300" placeholder="Short description"></div>
+            <div class="field"><textarea id="cPrompt" maxlength="2000" placeholder="Instructions: how should this agent behave?"></textarea></div>
+            <div class="row">
+              <button class="btn btn-primary small" id="cSave" type="submit">Save agent</button>
+              <button class="btn btn-outline small" id="cCancel" type="button">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
