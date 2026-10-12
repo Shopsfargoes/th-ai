@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Setup check | TH_AI</title>
+  <link rel="stylesheet" href="/css/base.css">
+  <style>
+    main { max-width: 560px; margin: 8vh auto; padding: 0 20px; }
+    .check { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin: 14px 0; }
+    .ok { color: var(--accent); font-weight: 600; } .bad { color: var(--danger); font-weight: 600; }
+    code { font-size: .85rem; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="logo">TH_AI</div>
+    <p style="color:var(--muted)">Setup check</p>
+    <div class="check"><div><strong>1. Server → Supabase</strong> <span id="s1">checking…</span></div><code id="d1"></code></div>
+    <div class="check"><div><strong>2. Browser → Supabase</strong> <span id="s2">checking…</span></div><code id="d2"></code></div>
+  </main>
+  <script src="/js/config.js"></script>
+  <script>
+    const show = (id, ok, d) => { const s = document.getElementById('s'+id); s.textContent = ok ? '✓ working' : '✗ failed'; s.className = ok ? 'ok' : 'bad'; document.getElementById('d'+id).textContent = d; };
+    fetch('/api/health').then(r => r.json()).then(j => show(1, j.ok, j.ok ? j.plans.map(p => p.name).join(', ') : j.error)).catch(e => show(1, false, e.message));
+    const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.TH_CONFIG;
+    fetch(SUPABASE_URL + '/rest/v1/plans?select=name&order=id', { headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY } })
+      .then(r => r.json()).then(rows => Array.isArray(rows) ? show(2, true, rows.map(p => p.name).join(', ')) : show(2, false, JSON.stringify(rows))).catch(e => show(2, false, e.message));
+  </script>
+</body>
+</html>

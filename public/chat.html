@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/chat.css">
+  <title>TH_AI</title>
+</head>
+<body>
+  <div class="app" id="app" hidden>
+    <aside class="sidebar" id="sidebar">
+      <div class="top"><span class="logo" style="font-size:1.2rem">TH_AI</span></div>
+      <button class="new-chat" id="newChat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        New chat
+      </button>
+      <div class="convo-label">Your conversations</div>
+      <div class="convos" id="convos"><div class="convo-empty">No conversations yet</div></div>
+      <div class="user-row">
+        <div class="menu" id="menu" hidden><button id="logout">Log out</button></div>
+        <button class="user-btn" id="userBtn"><span class="avatar" id="avatar"></span><span class="user-name" id="userName"></span></button>
+      </div>
+    </aside>
+    <div class="scrim" id="scrim"></div>
+
+    <section class="main">
+      <div class="topbar">
+        <button class="icon-btn" id="burger" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+      <div class="stage">
+        <h2 id="greeting">How can I help you today?</h2>
+        <div class="composer-wrap">
+          <div class="composer">
+            <textarea id="prompt" rows="1" placeholder="Ask anything"></textarea>
+            <button class="send" id="send" disabled aria-label="Send">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="/js/config.js"></script>
+  <script src="/js/supabase.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    (async () => {
+      const session = await Auth.requireAuth();
+      if (!session) return;
+      const u = session.user, meta = u.user_metadata || {};
+      const name = meta.full_name || meta.name || u.email.split('@')[0];
+      document.getElementById('userName').textContent = name;
+      const av = document.getElementById('avatar');
+      if (meta.avatar_url) av.style.backgroundImage = 'url(' + meta.avatar_url + ')';
+      else av.textContent = name.charAt(0).toUpperCase();
+      document.getElementById('greeting').textContent = 'Hello ' + name.split(' ')[0] + ', how can I help?';
+      document.getElementById('app').hidden = false;
+
+      // sidebar + menu
+      const sidebar = document.getElementById('sidebar'), scrim = document.getElementById('scrim');
+      const toggleSidebar = (open) => { sidebar.classList.toggle('open', open); scrim.classList.toggle('open', open); };
+      document.getElementById('burger').onclick = () => toggleSidebar(true);
+      scrim.onclick = () => toggleSidebar(false);
+      const menu = document.getElementById('menu');
+      document.getElementById('userBtn').onclick = (e) => { e.stopPropagation(); menu.hidden = !menu.hidden; };
+      document.addEventListener('click', () => { menu.hidden = true; });
+      document.getElementById('logout').onclick = () => Auth.signOut();
+
+      // composer
+      const prompt = document.getElementById('prompt'), send = document.getElementById('send');
+      prompt.addEventListener('input', () => {
+        prompt.style.height = 'auto';
+        prompt.style.height = Math.min(prompt.scrollHeight, 200) + 'px';
+        send.disabled = !prompt.value.trim();
+      });
+    })();
+
+    // keep the session in sync (e.g. logged out in another tab)
+    sb.auth.onAuthStateChange((event) => { if (event === 'SIGNED_OUT') location.replace('/login'); });
+  </script>
+</body>
+</html>
