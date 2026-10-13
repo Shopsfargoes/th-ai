@@ -23,6 +23,11 @@
         <button class="link-btn" id="clearAll">Clear all</button>
       </div>
       <div class="convos" id="convos"><div class="convo-empty">No conversations yet</div></div>
+      <div class="upgrade-box" id="upgradeBox" hidden>
+        <div class="usage-line" id="usageText"></div>
+        <div class="usage-bar" id="usageBar"><div id="usageFill"></div></div>
+        <a class="btn btn-primary" href="/pricing" style="text-decoration:none">Upgrade plan</a>
+      </div>
       <div class="user-row">
         <div class="menu" id="menu" hidden><div class="plan-info" id="planInfo"></div><a class="menu-item" href="/pricing">Upgrade plan</a><button id="logout">Log out</button></div>
         <button class="user-btn" id="userBtn"><span class="avatar" id="avatar"></span><span class="user-name" id="userName"></span></button>
@@ -47,6 +52,11 @@
       </div>
 
       <div class="composer-wrap dock">
+        <div class="usage-banner" id="usageBanner" hidden>
+          <span id="bannerText"></span>
+          <a href="/pricing">Upgrade</a>
+          <button id="bannerX" aria-label="Dismiss">×</button>
+        </div>
         <div class="notice" id="notice" hidden></div>
         <div class="attach-chip" id="chip" hidden><span id="chipName"></span><button id="chipX" aria-label="Remove file">×</button></div>
         <div class="composer">
@@ -91,6 +101,24 @@
               <button class="btn btn-outline small" id="cCancel" type="button">Cancel</button>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Daily limit reached -->
+  <div class="modal-backdrop" id="limitModal" hidden>
+    <div class="modal limit" role="dialog" aria-modal="true" aria-labelledby="limitTitle">
+      <div class="modal-head">
+        <h3 id="limitTitle">You've reached your daily limit</h3>
+        <button class="icon-x" id="closeLimit" aria-label="Close">×</button>
+      </div>
+      <p class="modal-sub" id="limitText"></p>
+      <div class="modal-body">
+        <div class="mini-plans" id="miniPlans"></div>
+        <div class="row" style="margin-top:16px">
+          <a class="btn btn-primary small" href="/pricing" style="text-decoration:none">View plans</a>
+          <button class="btn btn-outline small" id="limitLater" type="button">Maybe later</button>
         </div>
       </div>
     </div>

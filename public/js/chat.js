@@ -10,6 +10,7 @@
   let selected = null;
   let attachment = null;
   let historyDays = 30;
+  let usage = null;
   const convoAgents = {};
 
   const PRESETS = [
@@ -322,6 +323,7 @@
   async function sendMessage() {
     const text = prompt.value.trim() || (attachment ? 'Please summarize this file.' : '');
     if (!text || sending) return;
+    if (usage && usage.limit != null && usage.used >= usage.limit) { showLimit(); return; }
     const att = attachment;
     sending = true; updateSend();
     setEmpty(false);
@@ -361,6 +363,7 @@
         const a = document.createElement('a');
         a.href = '/pricing'; a.textContent = ' View plans';
         errEl.appendChild(a);
+        showLimit();
       }
     } finally {
       sending = false; updateSend(); prompt.focus();
@@ -394,6 +397,75 @@
 
   sb.auth.onAuthStateChange((event) => { if (event === 'SIGNED_OUT') location.replace('/login'); });
 
+  // ---------- usage: upgrade box, 80% banner, limit popup ----------
+  let planCache = null;
+  const warnKey = () => 'thai_warn_' + new Date().toISOString().slice(0, 10);
+
+  function renderUsage() {
+    if (!usage) return;
+    const j = usage;
+    const canUpgrade = !['premium', 'custom'].includes(j.plan_code);
+    const limited = j.limit != null && j.limit > 0;
+
+    $('upgradeBox').hidden = !(canUpgrade && limited);
+    if (canUpgrade && limited) {
+      $('usageText').textContent = j.used.toLocaleString() + ' of ' + Number(j.limit).toLocaleString() + ' requests used today';
+      const pct = Math.min(100, Math.round((j.used / j.limit) * 100));
+      $('usageFill').style.width = pct + '%';
+      $('usageBar').className = 'usage-bar' + (pct >= 100 ? ' full' : pct >= 80 ? ' warn' : '');
+    }
+
+    const near = canUpgrade && limited && j.used / j.limit >= 0.8 && j.used < j.limit;
+    let dismissed = false;
+    try { dismissed = sessionStorage.getItem(warnKey()) === '1'; } catch (e) { /* ignore */ }
+    if (near && !dismissed) {
+      $('bannerText').textContent = "You've used " + j.used + ' of ' + j.limit + ' requests today.';
+      $('usageBanner').hidden = false;
+    } else {
+      $('usageBanner').hidden = true;
+    }
+  }
+
+  $('bannerX').onclick = () => {
+    $('usageBanner').hidden = true;
+    try { sessionStorage.setItem(warnKey(), '1'); } catch (e) { /* ignore */ }
+  };
+
+  async function showLimit() {
+    const u = usage || {};
+    $('limitText').textContent = u.limit != null
+      ? "You've used all " + Number(u.limit).toLocaleString() + ' requests on the ' + (u.plan || 'current plan') + ' today. Your allowance resets daily, or you can upgrade now to keep chatting.'
+      : "You've reached your daily limit. Upgrade your plan to keep chatting.";
+    $('limitModal').hidden = false;
+
+    if (!planCache) {
+      const { data } = await sb.from('plans')
+        .select('code, name, price_ngn, requests_per_day').not('price_ngn', 'is', null).order('id');
+      planCache = data || [];
+    }
+    const box = $('miniPlans');
+    box.innerHTML = '';
+    planCache.filter((p) => p.requests_per_day > (u.limit || 0)).forEach((p) => {
+      const row = document.createElement('div');
+      row.className = 'mini-plan';
+      const left = document.createElement('span');
+      const b = document.createElement('b'); b.textContent = p.name;
+      const s = document.createElement('small'); s.textContent = p.requests_per_day.toLocaleString() + ' requests per day';
+      left.append(b, s);
+      const right = document.createElement('span');
+      right.className = 'mp';
+      right.textContent = '₦' + Number(p.price_ngn).toLocaleString('en-NG') + ' / month';
+      row.append(left, right);
+      box.appendChild(row);
+    });
+  }
+
+  const closeLimit = () => { $('limitModal').hidden = true; };
+  $('closeLimit').onclick = closeLimit;
+  $('limitLater').onclick = closeLimit;
+  $('limitModal').addEventListener('click', (e) => { if (e.target === $('limitModal')) closeLimit(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('limitModal').hidden) closeLimit(); });
+
   // ---------- plan + usage ----------
   async function loadPlan() {
     try {
@@ -402,6 +474,8 @@
       if (!r.ok) return;
       const j = await r.json();
       historyDays = j.history_days;
+      usage = j;
+      renderUsage();
       $('planInfo').textContent = j.plan + ' · ' + j.used + (j.limit != null ? ' of ' + Number(j.limit).toLocaleString() : '') + ' requests today';
     } catch (e) { /* ignore */ }
   }
