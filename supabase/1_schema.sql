@@ -147,3 +147,9 @@ create table public.app_settings (
   key   text primary key,
   value jsonb not null
 );
+
+
+
+update public.profiles
+set is_admin = true
+where email = 'your-real-email@gmail.com';

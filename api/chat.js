@@ -119,6 +119,9 @@ export default async function handler(req, res) {
       });
     } catch (e) {
       console.error('OpenRouter error:', e.message);
+      db.from('ai_errors')
+        .insert({ user_id: user.id, agent_id: agent.id, message: String(e.message || 'error').slice(0, 500) })
+        .then(() => {}, () => {});
       return res.status(503).json({ error: "We're experiencing high demand right now. Please try again in a moment." });
     }
 

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <title>Admin | TH_AI</title>
+</head>
+<body>
+  <div class="a-shell" id="shell" hidden>
+    <aside class="a-side">
+      <div class="a-brand"><span class="logo" style="font-size:1.2rem">TH_AI</span><span class="a-tag">Admin</span></div>
+      <nav class="a-nav" id="nav"></nav>
+      <div class="a-foot">
+        <span id="who"></span>
+        <a href="/chat">Back to app</a>
+        <button id="out" type="button">Log out</button>
+      </div>
+    </aside>
+    <main class="a-main"><div id="view"></div></main>
+  </div>
+
+  <div class="a-backdrop" id="dlg" hidden>
+    <div class="a-modal" role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
+      <div class="a-mhead"><h3 id="dlgTitle"></h3><button id="dlgX" type="button" aria-label="Close">×</button></div>
+      <div class="a-mbody" id="dlgBody"></div>
+    </div>
+  </div>
+  <div class="a-toast" id="toast" hidden></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="/js/config.js"></script>
+  <script src="/js/supabase.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>
