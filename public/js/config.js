@@ -3,4 +3,5 @@
 window.TH_CONFIG = {
   SUPABASE_URL: 'https://wvovvczvzlccjmjyhyzu.supabase.co',
   SUPABASE_ANON_KEY: 'sb_publishable_8xdhc2em5nIumbRhdxlatg_ctf28nkf',
+  CONTACT_EMAIL: 'venturecapitaldev@gnail.com',
 };

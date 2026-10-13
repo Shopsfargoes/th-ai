@@ -9,6 +9,7 @@
   let agents = [];
   let selected = null;
   let attachment = null;
+  let historyDays = 30;
   const convoAgents = {};
 
   const PRESETS = [
@@ -257,8 +258,10 @@
   }
 
   async function loadConversations() {
-    const { data } = await sb.from('conversations')
+    let q = sb.from('conversations')
       .select('id, title, agent_id').order('updated_at', { ascending: false }).limit(50);
+    if (historyDays) q = q.gte('updated_at', new Date(Date.now() - historyDays * 86400000).toISOString());
+    const { data } = await q;
     const box = $('convos');
     box.innerHTML = '';
     if (!data || !data.length) { box.innerHTML = '<div class="convo-empty">No conversations yet</div>'; return; }
@@ -340,15 +343,25 @@
       });
       const j = await r.json().catch(() => ({}));
       typing.remove();
-      if (!r.ok) throw new Error(j.error || 'Something went wrong. Please try again.');
+      if (!r.ok) {
+        const err = new Error(j.error || 'Something went wrong. Please try again.');
+        err.code = j.code;
+        throw err;
+      }
       addMsg('assistant', j.reply);
       if (!currentId) { currentId = j.conversation_id; convoAgents[currentId] = selected.id; }
       loadConversations();
+      loadPlan();
     } catch (e) {
       typing.remove();
       const msg = e && e.message && !/failed to fetch/i.test(e.message)
         ? e.message : 'Connection problem. Check your internet and try again.';
-      addMsg('assistant', msg, 'error');
+      const errEl = addMsg('assistant', msg, 'error');
+      if (e && e.code === 'limit') {
+        const a = document.createElement('a');
+        a.href = '/pricing'; a.textContent = ' View plans';
+        errEl.appendChild(a);
+      }
     } finally {
       sending = false; updateSend(); prompt.focus();
     }
@@ -381,10 +394,23 @@
 
   sb.auth.onAuthStateChange((event) => { if (event === 'SIGNED_OUT') location.replace('/login'); });
 
+  // ---------- plan + usage ----------
+  async function loadPlan() {
+    try {
+      const { data: { session: s } } = await sb.auth.getSession();
+      const r = await fetch('/api/usage', { headers: { Authorization: 'Bearer ' + s.access_token } });
+      if (!r.ok) return;
+      const j = await r.json();
+      historyDays = j.history_days;
+      $('planInfo').textContent = j.plan + ' · ' + j.used + (j.limit != null ? ' of ' + Number(j.limit).toLocaleString() : '') + ' requests today';
+    } catch (e) { /* ignore */ }
+  }
+
   // ---------- start ----------
   $('app').hidden = false;
   setEmpty(true);
   updateSend();
   await loadAgents();
+  await loadPlan();
   loadConversations();
 })();

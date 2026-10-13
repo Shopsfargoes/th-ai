@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/pricing.css">
+  <title>Plans | TH_AI</title>
+</head>
+<body>
+  <div class="p-wrap">
+    <nav class="p-nav">
+      <a class="logo" href="/" style="text-decoration:none">TH_AI</a>
+      <a class="link" id="navLink" href="/login">Log in</a>
+    </nav>
+    <header class="p-head">
+      <h1>Choose your plan</h1>
+      <p>Pick the plan that fits how much you use TH_AI. Prices are in Nigerian naira.</p>
+    </header>
+    <div id="msg" class="alert p-msg" hidden role="alert"></div>
+    <div class="p-grid" id="grid"></div>
+    <p class="p-foot">Plans last 30 days. Payments are processed securely by Paystack.</p>
+    <div class="auth-foot"><a href="/terms">Terms of use</a><span>|</span><a href="/privacy">Privacy Policy</a></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="/js/config.js"></script>
+  <script src="/js/supabase.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/pricing.js"></script>
+</body>
+</html>

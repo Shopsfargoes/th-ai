@@ -1,0 +1,19 @@
+.p-wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px 60px; }
+.p-nav { display: flex; align-items: center; justify-content: space-between; padding: 24px 0; }
+.p-nav a.link { color: var(--muted); font-size: .95rem; }
+.p-head { text-align: center; margin: 24px 0 40px; }
+.p-head h1 { font-size: 2.2rem; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 8px; }
+.p-head p { color: var(--muted); margin: 0; }
+.p-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.p-card { position: relative; border: 1px solid var(--border); border-radius: 16px; padding: 24px 22px; display: flex; flex-direction: column; background: var(--bg); }
+.p-card.pop { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.p-badge { position: absolute; top: -11px; left: 22px; background: var(--accent); color: var(--on-accent); font-size: .72rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+.p-card h3 { margin: 0 0 12px; font-size: 1.1rem; font-weight: 600; }
+.p-price { font-size: 2rem; font-weight: 600; letter-spacing: -0.02em; }
+.p-price small { font-size: .9rem; font-weight: 400; color: var(--muted); }
+.p-feats { list-style: none; padding: 0; margin: 18px 0 24px; display: flex; flex-direction: column; gap: 10px; font-size: .92rem; flex: 1; }
+.p-feats li { display: flex; gap: 8px; }
+.p-feats li::before { content: '✓'; color: var(--accent); font-weight: 600; }
+.p-card .btn { height: 46px; }
+.p-msg { max-width: 520px; margin: 0 auto 24px; }
+.p-foot { text-align: center; color: var(--muted); font-size: .85rem; margin-top: 28px; }

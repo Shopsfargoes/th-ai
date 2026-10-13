@@ -189,3 +189,8 @@
 .attach-chip button { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 1rem; line-height: 1; }
 .notice { margin: 0 6px 8px; font-size: .85rem; color: var(--danger); }
 .msg .att { display: block; width: fit-content; font-size: .8rem; border: 1px solid var(--border); background: var(--bg-soft); border-radius: 999px; padding: 3px 10px; margin-bottom: 6px; }
+/* ===== Phase 4 additions: paste at the BOTTOM of public/css/chat.css ===== */
+.menu .plan-info { padding: 10px 12px; font-size: .8rem; color: var(--muted); border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.menu a.menu-item { display: block; padding: 10px 12px; color: var(--text); font-size: .92rem; border-radius: 8px; text-decoration: none; }
+.menu a.menu-item:hover { background: var(--bg-hover); text-decoration: none; }
+.msg.error a { color: var(--accent); font-weight: 500; }

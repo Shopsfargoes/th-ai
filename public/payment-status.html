@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+  <title>Payment | TH_AI</title>
+  <style>
+    .box { max-width: 420px; margin: 18vh auto 0; padding: 0 24px; text-align: center; }
+    .box h1 { font-size: 1.7rem; font-weight: 600; letter-spacing: -0.02em; margin: 18px 0 8px; }
+    .box p { color: var(--muted); margin: 0 0 24px; }
+    .icon { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; margin: 0 auto; font-size: 1.6rem; background: var(--bg-soft); }
+    .icon.ok { background: var(--accent); color: var(--on-accent); }
+    .icon.bad { background: var(--danger-bg); color: var(--danger); }
+    .stack .btn { text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="icon" id="icon"><span class="spinner"></span></div>
+    <h1 id="title">Confirming your payment…</h1>
+    <p id="text">Please wait a moment.</p>
+    <div class="stack" id="actions" hidden></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="/js/config.js"></script>
+  <script src="/js/supabase.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    (async function () {
+      const $ = (id) => document.getElementById(id);
+      const params = new URLSearchParams(location.search);
+      const reference = params.get('reference') || params.get('trxref');
+      const session = await Auth.requireAuth();
+      if (!session) return;
+
+      function state(kind, title, text, actions) {
+        const icon = $('icon');
+        icon.className = 'icon ' + (kind === 'ok' ? 'ok' : kind === 'bad' ? 'bad' : '');
+        icon.textContent = kind === 'ok' ? '✓' : kind === 'bad' ? '!' : '';
+        $('title').textContent = title;
+        $('text').textContent = text;
+        const box = $('actions');
+        box.innerHTML = actions || '';
+        box.hidden = !actions;
+      }
+
+      if (!reference) {
+        return state('bad', 'No payment found', 'We could not find a payment to confirm.',
+          '<a class="btn btn-primary" href="/pricing">View plans</a>');
+      }
+
+      for (let i = 0; i < 5; i++) {
+        try {
+          const r = await fetch('/api/paystack-verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+            body: JSON.stringify({ reference }),
+          });
+          const j = await r.json().catch(() => ({}));
+          if (r.ok && j.status === 'success') {
+            return state('ok', "You're all set", (j.plan ? 'Your ' + j.plan + ' is now active.' : 'Your plan is now active.'),
+              '<a class="btn btn-primary" href="/chat">Start chatting</a>');
+          }
+          if (r.ok && j.status === 'failed') {
+            return state('bad', 'Payment was not completed', 'No charge was made, or it could not be confirmed. You can try again.',
+              '<a class="btn btn-primary" href="/pricing">Back to plans</a>');
+          }
+        } catch (e) { /* retry */ }
+        await new Promise((res) => setTimeout(res, 2500));
+      }
+      state('', 'Still confirming…', 'This is taking longer than usual. If you were charged, your plan will activate shortly. You can refresh this page.',
+        '<a class="btn btn-outline" href="/chat">Go to chat</a>');
+    })();
+  </script>
+</body>
+</html>
