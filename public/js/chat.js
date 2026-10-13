@@ -487,4 +487,6 @@
   await loadAgents();
   await loadPlan();
   loadConversations();
+  sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()
+    .then(({ data }) => { if (data && data.is_admin) $('adminLink').hidden = false; });
 })();
